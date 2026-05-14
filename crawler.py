@@ -17,30 +17,58 @@ from playwright.async_api import async_playwright, Page, BrowserContext
 
 load_dotenv()
 
-BASE_URL     = os.getenv("BASE_URL", "http://localhost:8080")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
 BOT_PASSWORD = os.getenv("BOT_PASSWORD", "Simulation2026!")
-DB_DSN       = os.getenv("DB_DSN", "")
+DB_DSN = os.getenv("DB_DSN", "")
 REPORT_EVERY_S = int(os.getenv("REPORT_EVERY_S", "15"))
-NORMAL_BOTS  = int(os.getenv("NORMAL_BOTS", "10"))
-HEAVY_BOTS   = int(os.getenv("HEAVY_BOTS", "5"))
+NORMAL_BOTS = int(os.getenv("NORMAL_BOTS", "10"))
+HEAVY_BOTS = int(os.getenv("HEAVY_BOTS", "5"))
 SESSION_BOTS = int(os.getenv("SESSION_BOTS", "5"))
 
 SEARCH_TERMS = [
-    "linux", "docker", "python", "devops", "kubernetes",
-    "nginx", "golang", "ansible", "terraform", "ubuntu",
-    "postgresql", "bash", "ssh", "firewall", "github",
-    "container", "security", "monitoring", "prometheus", "grafana",
-    "go", "ci", "cd",
+    "linux",
+    "docker",
+    "python",
+    "devops",
+    "kubernetes",
+    "nginx",
+    "golang",
+    "ansible",
+    "terraform",
+    "ubuntu",
+    "postgresql",
+    "bash",
+    "ssh",
+    "firewall",
+    "github",
+    "container",
+    "security",
+    "monitoring",
+    "prometheus",
+    "grafana",
+    "go",
+    "ci",
+    "cd",
 ]
 
 BOT_CREDENTIALS = [
-    *[{"username": f"bot_normal_{i:02d}",  "password": BOT_PASSWORD} for i in range(1, 11)],
-    *[{"username": f"bot_heavy_{i:02d}",   "password": BOT_PASSWORD} for i in range(1, 6)],
-    *[{"username": f"bot_session_{i:02d}", "password": BOT_PASSWORD} for i in range(1, 6)],
+    *[
+        {"username": f"bot_normal_{i:02d}", "password": BOT_PASSWORD}
+        for i in range(1, 11)
+    ],
+    *[
+        {"username": f"bot_heavy_{i:02d}", "password": BOT_PASSWORD}
+        for i in range(1, 6)
+    ],
+    *[
+        {"username": f"bot_session_{i:02d}", "password": BOT_PASSWORD}
+        for i in range(1, 6)
+    ],
 ]
 
 
 # ─────────────────────────────── Metrics ─────────────────────────────────────
+
 
 @dataclass
 class Metrics:
@@ -70,15 +98,21 @@ class Metrics:
     async def snapshot(self):
         async with self._lock:
             snap = {
-                "http_ok": self.http_ok, "http_fail": self.http_fail,
+                "http_ok": self.http_ok,
+                "http_fail": self.http_fail,
                 "http_avg_lat": _avg(self.http_latencies),
-                "login_ok": self.login_ok, "login_fail": self.login_fail,
-                "register_ok": self.register_ok, "register_fail": self.register_fail,
-                "search_ok": self.search_ok, "search_fail": self.search_fail,
+                "login_ok": self.login_ok,
+                "login_fail": self.login_fail,
+                "register_ok": self.register_ok,
+                "register_fail": self.register_fail,
+                "search_ok": self.search_ok,
+                "search_fail": self.search_fail,
                 "search_invalid_json": self.search_invalid_json,
                 "search_missing_key": self.search_missing_key,
-                "session_ok": self.session_ok, "session_fail": self.session_fail,
-                "db_ok": self.db_ok, "db_fail": self.db_fail,
+                "session_ok": self.session_ok,
+                "session_fail": self.session_fail,
+                "db_ok": self.db_ok,
+                "db_fail": self.db_fail,
                 "db_avg_lat": _avg(self.db_latencies),
             }
             self.http_ok = self.http_fail = 0
@@ -96,21 +130,28 @@ class Metrics:
 def _avg(lst):
     return round(sum(lst) / len(lst) * 1000, 1) if lst else 0.0
 
+
 def _uptime(ok, fail):
     return 100.0 if ok + fail == 0 else round(ok / (ok + fail) * 100, 1)
 
+
 def _icon(ok, fail):
-    if ok + fail == 0: return "⚪"
+    if ok + fail == 0:
+        return "⚪"
     pct = _uptime(ok, fail)
-    if pct >= 99: return "🟢"
-    if pct >= 90: return "🟡"
+    if pct >= 99:
+        return "🟢"
+    if pct >= 90:
+        return "🟡"
     return "🔴"
 
 
 # ─────────────────────────────── HTTP bot ────────────────────────────────────
 
+
 async def http_bot(m: Metrics, interval_s: float = 2.0):
     import aiohttp
+
     endpoints = [
         f"{BASE_URL}/health",
         f"{BASE_URL}/api/search?q=devops&language=en",
@@ -125,7 +166,9 @@ async def http_bot(m: Metrics, interval_s: float = 2.0):
             idx += 1
             t = time.monotonic()
             try:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                async with session.get(
+                    url, timeout=aiohttp.ClientTimeout(total=10)
+                ) as resp:
                     lat = time.monotonic() - t
                     async with m._lock:
                         if 200 <= resp.status < 400:
@@ -142,6 +185,7 @@ async def http_bot(m: Metrics, interval_s: float = 2.0):
 
 
 # ─────────────────────────────── DB bot ──────────────────────────────────────
+
 
 async def db_bot(m: Metrics, interval_s: float = 5.0):
     if not DB_DSN:
@@ -166,6 +210,7 @@ async def db_bot(m: Metrics, interval_s: float = 5.0):
 
 # ─────────────────────────────── Browser helpers ─────────────────────────────
 
+
 def _is_logged_in(content: str, username: str) -> bool:
     """Tjekker om siden indikerer at brugeren er logget ind."""
     lower = content.lower()
@@ -178,11 +223,12 @@ async def browser_register(page: Page, cred: dict, m: Metrics) -> bool:
     Returnerer True ved succes, False hvis brugeren allerede eksisterer eller fejl.
     """
     try:
-        await page.goto(f"{BASE_URL}/register", wait_until="domcontentloaded", timeout=15000)
-
+        await page.goto(
+            f"{BASE_URL}/register", wait_until="domcontentloaded", timeout=15000
+        )
         await page.fill('input[name="username"]', cred["username"])
-        await page.fill('input[name="email"]',    f"{cred['username']}@bot.internal")
-        await page.fill('input[name="password"]',  cred["password"])
+        await page.fill('input[name="email"]', f"{cred['username']}@bot.internal")
+        await page.fill('input[name="password"]', cred["password"])
 
         # Udfyld password2 hvis den eksisterer
         if await page.locator('input[name="password2"]').count() > 0:
@@ -194,7 +240,11 @@ async def browser_register(page: Page, cred: dict, m: Metrics) -> bool:
         content = await page.content()
 
         # Succes: enten logget ind direkte eller redirectet til login/search
-        if _is_logged_in(content, cred["username"]) or page.url.endswith("/search") or page.url.endswith("/login"):
+        if (
+            _is_logged_in(content, cred["username"])
+            or page.url.endswith("/search")
+            or page.url.endswith("/login")
+        ):
             async with m._lock:
                 m.register_ok += 1
             print(f"[Bot] ✅ '{cred['username']}' registreret")
@@ -208,7 +258,9 @@ async def browser_register(page: Page, cred: dict, m: Metrics) -> bool:
 
         async with m._lock:
             m.register_fail += 1
-        print(f"[Bot] ⚠️  Registrering fejlede for '{cred['username']}' – URL: {page.url}")
+        print(
+            f"[Bot] ⚠️  Registrering fejlede for '{cred['username']}' – URL: {page.url}"
+        )
         return False
 
     except Exception as e:
@@ -225,7 +277,9 @@ async def browser_login(page: Page, cred: dict, m: Metrics) -> bool:
     """
     for attempt in range(2):
         try:
-            await page.goto(f"{BASE_URL}/login", wait_until="domcontentloaded", timeout=15000)
+            await page.goto(
+                f"{BASE_URL}/login", wait_until="domcontentloaded", timeout=15000
+            )
             await page.fill('input[name="username"]', cred["username"])
             await page.fill('input[name="password"]', cred["password"])
             await page.click('input[type="submit"], button[type="submit"]')
@@ -240,7 +294,11 @@ async def browser_login(page: Page, cred: dict, m: Metrics) -> bool:
 
             # Login fejlede – er det fordi brugeren ikke eksisterer?
             lower = content.lower()
-            user_not_found = "invalid" in lower or "incorrect" in lower or page.url.endswith("/api/login")
+            user_not_found = (
+                "invalid" in lower
+                or "incorrect" in lower
+                or page.url.endswith("/api/login")
+            )
 
             if user_not_found and attempt == 0:
                 print(f"[Bot] ℹ️  '{cred['username']}' ikke fundet – registrerer...")
@@ -266,11 +324,12 @@ async def browser_search(page: Page, term: str, m: Metrics):
     """Søger via API og validerer JSON-struktur, interagerer også med browser-UI."""
     try:
         import aiohttp
+
         cookies = {c["name"]: c["value"] for c in await page.context.cookies()}
         async with aiohttp.ClientSession(cookies=cookies) as session:
             async with session.get(
                 f"{BASE_URL}/api/search?q={term}&language=en",
-                timeout=aiohttp.ClientTimeout(total=10)
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as resp:
                 if resp.status != 200:
                     async with m._lock:
@@ -313,7 +372,9 @@ async def browser_search(page: Page, term: str, m: Metrics):
 
 async def browser_logout(page: Page, m: Metrics):
     try:
-        await page.goto(f"{BASE_URL}/logout", wait_until="domcontentloaded", timeout=10000)
+        await page.goto(
+            f"{BASE_URL}/logout", wait_until="domcontentloaded", timeout=10000
+        )
         async with m._lock:
             m.session_ok += 1
     except Exception as e:
@@ -323,6 +384,7 @@ async def browser_logout(page: Page, m: Metrics):
 
 
 # ─────────────────────────────── User bots ───────────────────────────────────
+
 
 async def normal_user_bot(bot_id: int, browser, m: Metrics):
     """Login → søg 3 gange med realistiske pauser → logout."""
@@ -378,6 +440,7 @@ async def session_bot(bot_id: int, browser, m: Metrics):
 
 # ─────────────────────────────── Reporter ────────────────────────────────────
 
+
 async def reporter(m: Metrics):
     while True:
         await asyncio.sleep(REPORT_EVERY_S)
@@ -388,18 +451,31 @@ async def reporter(m: Metrics):
         print(f"\n╔{sep}╗")
         print(f"║  📊 Rapport – {now:<39}║")
         print(f"╠{sep}╣")
-        print(f"║  {_icon(snap['http_ok'], snap['http_fail'])} HTTP       │ OK:{snap['http_ok']:<5} Fejl:{snap['http_fail']:<5} Uptime:{_uptime(snap['http_ok'], snap['http_fail']):5.1f}% Lat:{snap['http_avg_lat']:5.1f} ms ║")
+        print(
+            f"║  {_icon(snap['http_ok'], snap['http_fail'])} HTTP       │ OK:{snap['http_ok']:<5} Fejl:{snap['http_fail']:<5} Uptime:{_uptime(snap['http_ok'], snap['http_fail']):5.1f}% Lat:{snap['http_avg_lat']:5.1f} ms ║"
+        )
         print(f"╠{sep}╣")
-        print(f"║  {_icon(snap['db_ok'], snap['db_fail'])} DB         │ OK:{snap['db_ok']:<5} Fejl:{snap['db_fail']:<5} Uptime:{_uptime(snap['db_ok'], snap['db_fail']):5.1f}% Lat:{snap['db_avg_lat']:5.1f} ms ║")
+        print(
+            f"║  {_icon(snap['db_ok'], snap['db_fail'])} DB         │ OK:{snap['db_ok']:<5} Fejl:{snap['db_fail']:<5} Uptime:{_uptime(snap['db_ok'], snap['db_fail']):5.1f}% Lat:{snap['db_avg_lat']:5.1f} ms ║"
+        )
         print(f"╠{sep}╣")
-        print(f"║  👤 Register  │ OK:{snap['register_ok']:<5} Fejl:{snap['register_fail']:<5}                                   ║")
-        print(f"║  🔑 Login     │ OK:{snap['login_ok']:<5} Fejl:{snap['login_fail']:<5} Uptime:{_uptime(snap['login_ok'], snap['login_fail']):5.1f}%              ║")
-        print(f"║  🔍 Søgning   │ OK:{snap['search_ok']:<5} Fejl:{snap['search_fail']:<5} Uptime:{_uptime(snap['search_ok'], snap['search_fail']):5.1f}% (inv.JSON:{snap['search_invalid_json']} mangl.key:{snap['search_missing_key']}) ║")
-        print(f"║  🔓 Session   │ OK:{snap['session_ok']:<5} Fejl:{snap['session_fail']:<5} Uptime:{_uptime(snap['session_ok'], snap['session_fail']):5.1f}%              ║")
+        print(
+            f"║  👤 Register  │ OK:{snap['register_ok']:<5} Fejl:{snap['register_fail']:<5}                                   ║"
+        )
+        print(
+            f"║  🔑 Login     │ OK:{snap['login_ok']:<5} Fejl:{snap['login_fail']:<5} Uptime:{_uptime(snap['login_ok'], snap['login_fail']):5.1f}%              ║"
+        )
+        print(
+            f"║  🔍 Søgning   │ OK:{snap['search_ok']:<5} Fejl:{snap['search_fail']:<5} Uptime:{_uptime(snap['search_ok'], snap['search_fail']):5.1f}% (inv.JSON:{snap['search_invalid_json']} mangl.key:{snap['search_missing_key']}) ║"
+        )
+        print(
+            f"║  🔓 Session   │ OK:{snap['session_ok']:<5} Fejl:{snap['session_fail']:<5} Uptime:{_uptime(snap['session_ok'], snap['session_fail']):5.1f}%              ║"
+        )
         print(f"╚{sep}╝")
 
 
 # ──────────────────────────────── Main ───────────────────────────────────────
+
 
 async def main():
     m = Metrics()
@@ -407,7 +483,9 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         print(f"▶ Crawler startet mod {BASE_URL}")
-        print(f"▶ {NORMAL_BOTS} normal · {HEAVY_BOTS} heavy · {SESSION_BOTS} session user-bots")
+        print(
+            f"▶ {NORMAL_BOTS} normal · {HEAVY_BOTS} heavy · {SESSION_BOTS} session user-bots"
+        )
         print(f"▶ Bots registrerer sig selv automatisk hvis de ikke eksisterer")
 
         tasks = [
