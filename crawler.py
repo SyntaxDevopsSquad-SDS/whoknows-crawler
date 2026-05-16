@@ -181,7 +181,7 @@ async def http_bot(m: Metrics, interval_s: float = 2.0):
                 async with m._lock:
                     m.http_fail += 1
                 print(f"[HTTP] ❌ {url} – {e}")
-            await asyncio.sleep(interval_s)
+            await asyncio.sleep(random.uniform(interval_s * 0.7, interval_s * 1.3))
 
 
 # ─────────────────────────────── DB bot ──────────────────────────────────────
@@ -223,6 +223,7 @@ async def browser_register(page: Page, cred: dict, m: Metrics) -> bool:
     Returnerer True ved succes, False hvis brugeren allerede eksisterer eller fejl.
     """
     try:
+        await asyncio.sleep(random.uniform(0.3, 1.2))
         await page.goto(
             f"{BASE_URL}/register", wait_until="domcontentloaded", timeout=15000
         )
@@ -277,6 +278,7 @@ async def browser_login(page: Page, cred: dict, m: Metrics) -> bool:
     """
     for attempt in range(2):
         try:
+            await asyncio.sleep(random.uniform(0.3, 1.2))
             await page.goto(
                 f"{BASE_URL}/login", wait_until="domcontentloaded", timeout=15000
             )
@@ -372,6 +374,7 @@ async def browser_search(page: Page, term: str, m: Metrics):
 
 async def browser_logout(page: Page, m: Metrics):
     try:
+        await asyncio.sleep(random.uniform(0.2, 0.8))
         await page.goto(
             f"{BASE_URL}/logout", wait_until="domcontentloaded", timeout=10000
         )
@@ -402,7 +405,7 @@ async def normal_user_bot(bot_id: int, browser, m: Metrics):
 
         await browser_logout(page, m)
         await context.close()
-        await asyncio.sleep(5.0)
+        await asyncio.sleep(random.uniform(3.0, 8.0))
 
 
 async def heavy_user_bot(bot_id: int, browser, m: Metrics):
@@ -421,7 +424,7 @@ async def heavy_user_bot(bot_id: int, browser, m: Metrics):
 
         await browser_logout(page, m)
         await context.close()
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(random.uniform(0.5, 2.0))
 
 
 async def session_bot(bot_id: int, browser, m: Metrics):
@@ -435,7 +438,7 @@ async def session_bot(bot_id: int, browser, m: Metrics):
         await browser_login(page, cred, m)
         await browser_logout(page, m)
         await context.close()
-        await asyncio.sleep(3.0)
+        await asyncio.sleep(random.uniform(2.0, 5.0))
 
 
 # ─────────────────────────────── Reporter ────────────────────────────────────
