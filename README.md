@@ -14,9 +14,9 @@ Automated intelligent crawler and simulation tool for [WhoKnows](https://syntax-
 
 | Type | Count | Behaviour |
 |---|---|---|
-| Normal | 10 | Login → search 3 times with realistic pauses → logout |
-| Heavy | 5 | Login → search 10 times rapidly → logout |
-| Session | 5 | Login → logout immediately, stressing session handling |
+| Normal | 5 | Login → search 3 times with realistic pauses → logout |
+| Heavy | 2 | Login → search 10 times rapidly → logout |
+| Session | 2 | Login → logout immediately, stressing session handling |
 
 ### Self-registration
 
@@ -50,9 +50,9 @@ BASE_URL=https://syntax-reborndev.com
 BOT_PASSWORD=Simulation2026!
 DB_DSN=                          # leave empty – prod DB is not exposed externally
 REPORT_EVERY_S=15
-NORMAL_BOTS=10
-HEAVY_BOTS=5
-SESSION_BOTS=5
+NORMAL_BOTS=5
+HEAVY_BOTS=2
+SESSION_BOTS=2
 ```
 
 ## Run
