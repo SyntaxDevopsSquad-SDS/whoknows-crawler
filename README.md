@@ -47,7 +47,7 @@ Fill in `.env`:
 
 ```env
 BASE_URL=https://syntax-reborndev.com
-BOT_PASSWORD=Simulation2026!
+BOT_PASSWORD=your-password-here
 DB_DSN=                          # leave empty – prod DB is not exposed externally
 REPORT_EVERY_S=15
 NORMAL_BOTS=5
