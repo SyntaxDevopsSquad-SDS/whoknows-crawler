@@ -1,0 +1,72 @@
+name: Deploy Crawler
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'crawler.py'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: 165.227.145.80
+          username: root
+          key: -----BEGIN OPENSSH PRIVATE KEY-----
+                b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
+                NhAAAAAwEAAQAAAgEA5Y09FuhncSe0qGNIuA4mL2pclkwgpMmUHeJ0EB6kiss1heHH2q2O
+                fnfixR2Gc1Ih0ymYKKqF073vGN6aoaE0yM+0DipsLMSyps3LfS99KCLsJeRcesSeT3PxID
+                VwAnXxfgfK6y1x/N6H96MZmRFfpwRNdu11tLAD9Quy5of4PwAyLL350XjYKcn8tO8gW/8S
+                q9lTJ+H7JbJrZVkdWExHrpCMGkeGU6mRQMLUpv3TKSk5JSEFinFumerqht6iErhNDF9r9h
+                J7rAckvHwftGpA7qtwGU5hEgEt9nFxnIIsxm753Ep3ipT5F4aPhK46bT+TrODIUwKskwqX
+                u9OJoQTV9mnlfyBxsZpW4AiZnswoBVlSS/Mh7CLwOjvfMP4vBa2YHxyuwVf7dvI5n6AKHI
+                H9WQotTEXOJ1XuzPlAvhtflbHsqUoQSNVrqPOpGDcxhCvVegSAsjqa0OnWa8tlSOXKaaNP
+                GKH2LixpjS/xx4thUIx2jex61GueMpEUo443Yw3ekKXMx7/R4ELSPGQOXHl2avGpYHljyB
+                xFXhSKFvS1tv29K3tHR7houjLEdopFFVDxDjUF2x9BWvcIoQs5O+PjkdIBU+Z6vKZIE9Oh
+                7mgBy45mG1GpcGhWJVAj4tLSVjE4vRRb04UV3KWqNLPgeAElDf5OA4/rqjxiSsN1DjB4Pu
+                UAAAdQH29k+x9vZPsAAAAHc3NoLXJzYQAAAgEA5Y09FuhncSe0qGNIuA4mL2pclkwgpMmU
+                HeJ0EB6kiss1heHH2q2OfnfixR2Gc1Ih0ymYKKqF073vGN6aoaE0yM+0DipsLMSyps3LfS
+                99KCLsJeRcesSeT3PxIDVwAnXxfgfK6y1x/N6H96MZmRFfpwRNdu11tLAD9Quy5of4PwAy
+                LL350XjYKcn8tO8gW/8Sq9lTJ+H7JbJrZVkdWExHrpCMGkeGU6mRQMLUpv3TKSk5JSEFin
+                Fumerqht6iErhNDF9r9hJ7rAckvHwftGpA7qtwGU5hEgEt9nFxnIIsxm753Ep3ipT5F4aP
+                hK46bT+TrODIUwKskwqXu9OJoQTV9mnlfyBxsZpW4AiZnswoBVlSS/Mh7CLwOjvfMP4vBa
+                2YHxyuwVf7dvI5n6AKHIH9WQotTEXOJ1XuzPlAvhtflbHsqUoQSNVrqPOpGDcxhCvVegSA
+                sjqa0OnWa8tlSOXKaaNPGKH2LixpjS/xx4thUIx2jex61GueMpEUo443Yw3ekKXMx7/R4E
+                LSPGQOXHl2avGpYHljyBxFXhSKFvS1tv29K3tHR7houjLEdopFFVDxDjUF2x9BWvcIoQs5
+                O+PjkdIBU+Z6vKZIE9Oh7mgBy45mG1GpcGhWJVAj4tLSVjE4vRRb04UV3KWqNLPgeAElDf
+                5OA4/rqjxiSsN1DjB4PuUAAAADAQABAAACAB00dPs/IjoBRTjPOOdB1ZXewFzW3qhYhSGw
+                N/f9Dg4igHLCIP0va5ungRB3Cy4M2wTUm+lAmLoxxgOx/pZlviN2WYAb4Ztogxo5wJPywM
+                ekecrwXNu5vDJ7m8fvRIrrmofgUe7N31y+qynUdGNHFJZZM8nXuEv+wOIiVOaDkg/h5IBQ
+                w0HlUAsxCZezfLh3oVZ/1daTJ7LKGmPQjK05Nz18YnbNdseaIULOBuQgEwd/mSeiJeRRPj
+                MS8jeqh5A+Jn9WfJPYEif22LOqTxZTFmPHKAHwOOVjhQd/s2aoIS413FAsoTzeazqVAhlt
+                WT2hAxbRmmsFQhOLG3boGPCFfvsXGctAguNDzHEEYtSlY7LTNa20AT8gKaBGkUaEoBUewD
+                D4P+ZwyyIb728O5YOBK/EiFo3nmMyLYF2E5Ey60NLsl7Ovd1+rx1LwtqetwbhkDlpLlnay
+                aO2Z1CZ8VA/t3qHR28PXsbzVnhPJMGgQ8ihJRtHpeKFRL+LLq4Ql2DHtocJx0o7y66f4BE
+                8u8kvx99hZWuutES+S9r0mzQchFCyzVvvn2zXVdcCbBHjUEVj4VrNsh7dXY10d8Z2sTIQg
+                1VBnl/6TjIKd455Q9VidzABGGEoK+REDsup0FglkEuNKXGBniTR1s8ODkZnXQVd6XCL0NY
+                9mVnFFy0Tx9ZY8uiGZAAAA/3H0GTLVLM9tGrIMXRAhjW60dufHGA0ILEWsmRVQ1wGk52Mu
+                EACaoFSZw2jwe3QHZImmVWFW4Rw1O3kDAZ1lSF8VlO+zxzxwh3yzRaNfPBxyXYClvt1kXL
+                sUipDjwFdopnVbK7Y6XmNqmIbIsD14svEyBkaxUIviWpBKkmj8CKKfsPuJC8ln3032Ss1X
+                IP9tIVCOdEHLVBD24t0upGbkjnpX0Ng8AB/rx9DHlN1IMfA0o6pZPvXJFETIoTYdMdqObI
+                Evbs50VyaxA0hxR+3MRIaF4b/P5tI9JeGB8Svntr97Iozo8jsxLqCyqOZ3OgogrGLICasV
+                gvGwrFJcw/ztwAAAAQEA9Uy8oihinY94AxVdnFYiPrbOfNjcIrx8D2QvVNsiPLxGU95uqu
+                2h931rq+uaN+pYB7lMppamptoGCy50W/LX8dx82S68yh8WLo1ss2mjrxvQ1lLC97MD50sN
+                AXhgoCsfH2helFzggEnPphQc4BPlRG3teg8wc+K9u5SibFEqxmJ6/qFkmoPkeVAvFBcenu
+                o4LF6ufx4OEidw9cSOTfR1umzvXZWoFhz/dsrdxVxRtMrIV0raRNraA2/p/4bhXTWjKblI
+                O4cn2Kvz4dHwFGoOAVuJZlIjmvqKBSOGvQpbxEJoYBMKfjBIU02bLadUBQGZdruEokQTYC
+                m6ZRgcdtRhlwAAAQEA75Cks8QwJAawwwTeIf43I+zygshxxtOBvqO/Gc3owe9xnAW5glQs
+                0WxYW2LHmGIle8zaSF4fWcLF6KxdywtMadSaA5uh7jlFFzhF4Db0gyZmQAZxKzbkE0EfCP
+                jfnakgIVum+Pq85dE4jnckZRvjaHu5zGypAjIXsf988h196yPnXbKUKdR+9aZtvfWOaORt
+                ruax+l5kX8SjkgZB6KocnmM7eeQMDkJ0hiaM5r0C7cSFwGeuC2FkPCfNRvKCZfekc5VJ4r
+                xfXjZ+ABGmLKSCuK7y1wsI3TPfXGzw3hPlJBWAXcabAZvqrbL0QWmg5KHJoIxtvOdHZOSp
+                QvW3InK64wAAABVuYWppYl9jd29AaG90bWFpbC5jb20BAgMEBQYH
+              -----END OPENSSH PRIVATE KEY-----
+          script: |
+            cd ~/whoknows-crawler
+            git pull
+            docker-compose rm -f crawler
+            docker-compose up -d
