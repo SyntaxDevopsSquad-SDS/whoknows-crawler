@@ -49,6 +49,23 @@ SEARCH_TERMS = [
     "go",
     "ci",
     "cd",
+    "JavaScript",
+    "Database",
+    "SPSS",
+    "ActionScript",
+    "ColdFusion",
+    "PL/SQL",
+    "Simula",
+    "S-PLUS",
+    "Stata",
+    "Smalltalk",
+    "SNOBOL",
+    "SOAP",
+    "Seed7",
+    "Robotics",
+    "Squeak",
+    "PowerShell",
+    "ECMAScript",
 ]
 
 BOT_CREDENTIALS = [
