@@ -66,6 +66,7 @@ Required GitHub secrets:
 | `SSH_PRIVATE_KEY` | Private SSH key with access to the server |
 
 ## Report output
+```
 ╔══════════════════════════════════════════════════════╗
 ║  📊 Rapport – 11:51:05                               ║
 ╠══════════════════════════════════════════════════════╣
@@ -76,6 +77,7 @@ Required GitHub secrets:
 ║  🔍 Søgning   │ OK:129  Fejl:0   Uptime:100.0% (inv.JSON:0 mangl.key:0) ║
 ║  🔓 Session   │ OK:44   Fejl:0   Uptime:100.0%               ║
 ╚══════════════════════════════════════════════════════╝
+```
 
 ## Related
 - [devops-syntaxsquad](https://github.com/SyntaxDevopsSquad-SDS/devops-syntaxsquad) – the application being tested
